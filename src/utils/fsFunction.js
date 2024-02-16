@@ -5,10 +5,16 @@ const comandPath = path.resolve(__dirname, '../DB/Comands.json');
 
 const readDB = async () => {
   const read = await fs.readFile(comandPath);
-  console.log(JSON.parse(read));
+  return JSON.parse(read);
 }
 
-const writeDB = async () => {
+const writeDB = async (key, value) => {
+  const read = await readDB();
+
+  await fs.writeFile(comandPath, JSON.stringify({
+    ...read,
+    [key]: value
+  }));
 
 }
 

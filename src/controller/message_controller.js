@@ -23,7 +23,7 @@ const messageController = async (msg) => {
     await chat.sendMessage(text, { mentions });
   };
 
-  if (contentMsg.includes(' ruy ') || contentMsg.includes(' gu ')) {
+  if (contentMsg === 'ruy' || contentMsg === 'gu') {
     const name = msg._data.notifyName;
     if (name === 'Morghana') {
       return await msg.reply('oi amor')
