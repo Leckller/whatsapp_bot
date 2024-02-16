@@ -1,15 +1,21 @@
-const comands = require('./comands_controller');
+const { comandsModel } = require('../model');
+const { groupValidate } = require('../services');
 
 const messageController = async (msg) => {
   const contentMsg = msg.body;
+  // msg.id.remote = string de referencia ao chat
+  const validGp = await groupValidate(msg.id.remote);
 
-  if (msg.id.remote === "5521994288388-1563854145@g.us") {
-    console.log('its a brodal msg: ' + msg)
-  } if (msg.id.remote !== "5521994288388-1563854145@g.us") {
-    console.log('its not a brodal msg: ' + msg)
-  }
+  // Validar se o usuario está como admin
+  // if (msg.body === '+gp') {
+  //   comandsModel.addGroupPerms(msg.id.remote);
+  // };
 
+  // Verifica se o comando foi disparado em um grupo valido;
   if (contentMsg === '!everyone') {
+    if (!validGp) {
+      return await msg.reply('* Este grupo não tem permissão para usar este comando *');
+    }
     const chat = await msg.getChat();
 
     let text = '';
@@ -21,15 +27,9 @@ const messageController = async (msg) => {
     }
 
     await chat.sendMessage(text, { mentions });
+    // Envia uma mensagem mencionando todos os integrantes do grupo
   };
 
-  if (contentMsg === 'ruy' || contentMsg === 'gu') {
-    const name = msg._data.notifyName;
-    if (name === 'Morghana') {
-      return await msg.reply('oi amor')
-    }
-    await msg.reply(`oi ${msg._data.notifyName}`);
-  }
 }
 
 module.exports = messageController;

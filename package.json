@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "db": "cd src && mkdir DB && cd DB && touch Comands.json && echo {} > Comands.json",
+    "db": "cd src && mkdir DB && cd db && touch Comands.json && echo {} > Comands.json",
     "start": "node .",
     "dev": "nodemon ."
   },
