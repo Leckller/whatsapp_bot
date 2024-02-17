@@ -3,16 +3,26 @@ const validates = require('../services');
 
 // Controles para o numero host do whatsapp
 const messageCreateController = async (msg) => {
-  // verifica se foi disparado um comando ou não
-  const validGroup = await validates.isGroupValidate(msg.id);
 
-  if (validates.listenComand(msg.body)) {
+  // verifica se foi disparado um comando ou não
+  if (!validates.listenComand(msg.body)) {
     return console.log('not a command');
   } else {
-    const contentMsg = msg.body;
     console.log('is a comand')
-    // se quotedParticipant existir significa que o comando foi chamado na resposta de outra mensagem, então este usuario da mensagem marcada recebe permissoes para utilizar o bot (quotedParticipant = numero da pessoa)
 
+    const validGroup = validates.isGroupValidate(msg.id);
+    const contentMsg = msg.body;
+
+    if (msg.body.includes('!climate')) {
+      const req = await comandsModel.climateAutoComplete(msg);
+      if (req.length === 1) {
+        const reqCur = await comandsModel.climateCurrent(req[1].url);
+        return await msg.reply(`${reqCur.current.temp_c} C`)
+      }
+      // return await msg.reply(`Escreva !`)
+    }
+
+    // se quotedParticipant existir significa que o comando foi chamado na resposta de outra mensagem, então este usuario da mensagem marcada recebe permissoes para utilizar o bot (quotedParticipant = numero da pessoa)
     // também funcionaria se fosse enviado o numero da pessoa mas dessa forma fica mais simples de adicionar permissão para alguem
     if (msg.body === '+user' && "quotedParticipant" in msg._data) {
       await comandsModel.addUserPerms(msg._data.quotedParticipant);

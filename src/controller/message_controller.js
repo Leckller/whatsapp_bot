@@ -1,11 +1,12 @@
 const { comandsModel } = require('../model');
 const validates = require('../services');
+const { commands } = require('./index')
 
 // Controles para as pessoas não host do whatsapp
 const messageController = async (msg) => {
 
   // verifica se foi disparado um comando ou não
-  if (validates.listenComand(msg.body)) {
+  if (!validates.listenComand(msg.body)) {
     return console.log('not a command');
   } else {
     console.log('is a comand')
@@ -34,19 +35,8 @@ const messageController = async (msg) => {
       return await msg.reply(validGroup);
     }
     if (contentMsg === '!everyone') {
-      const chat = await msg.getChat();
-
-      let text = '';
-      let mentions = [];
-
-      for (let participant of chat.participants) {
-        mentions.push(`${participant.id.user}@c.us`);
-        text += `@${participant.id.user} `;
-      }
-
-      await chat.sendMessage(text, { mentions });
-      // Envia uma mensagem mencionando todos os integrantes do grupo
-    };
+      await commands['!everyone'](msg);
+    }
   }
 }
 

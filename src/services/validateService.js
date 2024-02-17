@@ -33,6 +33,7 @@ const isGroupValidate = (id) => {
   return false;
 };
 
+// talvez isso aqui não faça sentido
 const allValidates = async (remote, user) => {
   const validGp = await groupValidate(remote);
   const validUser = await userValidate(user);
