@@ -14,7 +14,7 @@ const messageController = async (msg) => {
     // msg.id.remote = string de referencia ao chat
     const everyValid = await validates.allValidates(msg.id.remote, msg);
     // verifica se o chat é um grupo
-    const validGroup = await validates.isGroupValidate(msg.id);
+    const validGroup = validates.isGroupValidate(msg.id);
 
     // Verifica se há algum erro
     if (everyValid !== false) {

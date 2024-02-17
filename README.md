@@ -1,7 +1,7 @@
 Bot para o Whatsapp
   * tecnologias utilizadas
     - Node.js
-    - Mocha, Chai, Sinon (ainda não implementado)
+    - Mocha, Chai, Sinon
     - Docker (ainda não implementado)
     - MySql (ainda não implementado)
 

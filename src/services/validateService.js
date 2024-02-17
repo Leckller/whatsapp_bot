@@ -1,6 +1,6 @@
 const { readDB } = require("../utils/fsFunction");
 
-const listenComand = async (msg) => {
+const listenComand = (msg) => {
   // deve receber o conteudo da mensagem
   const validComands = ['+user', '+gp', '!everyone', '+var']
   const isCommand = validComands.some(cmd => cmd === msg)
@@ -24,7 +24,7 @@ const userValidate = async (user) => {
   return userValidate;
 };
 
-const isGroupValidate = async (id) => {
+const isGroupValidate = (id) => {
   // id é um objeto de _data ou message
   if (!("participant" in id)) {
     return '* Este comando funciona apenas em grupos'

@@ -21,7 +21,30 @@ const addUserPerms = async (user) => {
   await writeDB("userPerms", [...read.userPerms, user])
 }
 
+const deleteGroupPerms = async (remote) => {
+  const read = await readDB();
+
+  if (!read.groupPerms.some(gp => gp === remote)) {
+    return console.log('grupo não encontrado');
+  }
+
+  const newArrGp = [...read.groupPerms].filter(gp => gp !== remote);
+  await writeDB("groupPerms", newArrGp)
+}
+
+const deleteUserPerms = async (user) => {
+  const read = await readDB();
+
+  if (!read.userPerms.some(userDB => userDB === user)) {
+    return console.log('user não encontrado');
+  }
+  const newArrGp = [...read.userPerms].filter(userDB => userDB !== user);
+  await writeDB("userPerms", newArrGp);
+}
+
 module.exports = {
   addGroupPerms,
-  addUserPerms
+  addUserPerms,
+  deleteGroupPerms,
+  deleteUserPerms
 }
