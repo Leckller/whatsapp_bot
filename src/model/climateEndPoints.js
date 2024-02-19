@@ -16,7 +16,7 @@ const current = async (local, days = 3) => {
   return data;
 };
 
-current('sao-goncalo-rio-de-janeiro-brazil').then(t => console.log(t));
+// current('sao-goncalo-rio-de-janeiro-brazil').then(t => console.log(t));
 
 module.exports = {
   searchAutoComplete,

@@ -6,9 +6,8 @@ const messageCreateController = async (msg) => {
 
   // verifica se foi disparado um comando ou não
   if (!validates.listenComand(msg.body)) {
-    return console.log('not a command');
+    return;
   } else {
-    console.log('is a comand')
 
     const validGroup = validates.isGroupValidate(msg.id);
     const contentMsg = msg.body;

@@ -7,12 +7,12 @@ const messageController = async (msg) => {
 
   // verifica se foi disparado um comando ou não
   if (!validates.listenComand(msg.body)) {
-    return console.log('not a command');
+    return;
   } else {
-    console.log('is a comand')
 
     const contentMsg = msg.body;
     // msg.id.remote = string de referencia ao chat
+    // (numero de quem enviou + possivel uid do grupo)
     const everyValid = await validates.allValidates(msg.id.remote, msg);
     // verifica se o chat é um grupo
     const validGroup = validates.isGroupValidate(msg.id);
