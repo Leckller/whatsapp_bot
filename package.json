@@ -2,11 +2,12 @@
   "name": "wbot",
   "version": "1.0.0",
   "description": "",
-  "main": "./app.js",
+  "main": "./src/app.js",
   "scripts": {
+    "db": "cd src && mkdir DB && cd DB && touch Comands.json && echo {} > Comands.json",
     "start": "node .",
     "dev": "nodemon .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./src/tests/**/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,11 @@
     "whatsapp-web.js": "^1.23.0"
   },
   "devDependencies": {
-    "nodemon": "3.0.3"
+    "chai": "4.3.4",
+    "dotenv": "^16.4.4",
+    "express-async-errors": "^3.1.1",
+    "mocha": "8.4.0",
+    "nodemon": "3.0.3",
+    "sinon": "11.1.1"
   }
 }
