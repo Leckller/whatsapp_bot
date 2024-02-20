@@ -4,15 +4,16 @@
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "db": "cd src && mkdir DB && cd DB && touch Comands.json && echo {} > Comands.json",
     "start": "node .",
     "dev": "nodemon .",
-    "test": "mocha ./src/tests/**/*.test.js"
+    "test": "mocha ./src/tests/**/*.test.js",
+    "test:coverage": "nyc --all --include src/models --include src/services --include src/controllers mocha ./src/tests/UNIT/**/*.js --exit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "firebase-admin": "^12.0.0",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.23.0"
   },
@@ -22,6 +23,7 @@
     "express-async-errors": "^3.1.1",
     "mocha": "8.4.0",
     "nodemon": "3.0.3",
+    "nyc": "15.1.0",
     "sinon": "11.1.1"
   }
 }

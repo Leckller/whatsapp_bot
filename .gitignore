@@ -1,5 +1,7 @@
 .wwebjs_auth
 .wwebjs_cache
+.nyc_output
 node_modules
 src/DB
 .env
+serviceAccountKey.json

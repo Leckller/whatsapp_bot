@@ -1,7 +1,5 @@
-const validateServices = require('./validateService');
-const climates = require('./climateEndPoints');
+const services = require('./validateService');
 
 module.exports = {
-  ...validateServices,
-  climates
+  services,
 }

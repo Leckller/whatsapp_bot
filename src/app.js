@@ -16,6 +16,9 @@ client.on('ready', () => {
 
 client.on('message', messageController);
 
+// caso queira enviar fotos deverá ser implementado
+// aqui, caso contrario o node não vai permitir usar o client
+
 client.on('message_create', messageCreateController);
 
 client.initialize();

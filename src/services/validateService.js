@@ -1,58 +1,72 @@
-const { readDB } = require("../utils/fsFunction");
+const { models } = require('../model');
+const fila = require('../utils/queue');
 
 const listenComand = (msg) => {
   // deve receber o conteudo da mensagem
-  const validComands = ['+user', '+gp', '!everyone', '+var']
-  const isCommand = validComands.some(cmd => cmd === msg)
+  const validComands = ['+user', '+gp', '!todes', '!everyone', '+var', '!climate', '&climate']
+  const isCommand = validComands.some(cmd => cmd === msg.split(' ')[0])
   // retorna true caso seja um comando e falso caso seja uma mensagem normal
   return isCommand;
 }
 
-const groupValidate = async (remote) => {
-  const { groupPerms } = await readDB();
+// usuario valido, grupo valido, comando valido no chat
 
-  // Procura se existe o grupo no banco de dados
-  const groupValidate = groupPerms.some(gp => gp === remote);
-  return groupValidate;
-};
-
-const userValidate = async (user) => {
-  const { userPerms } = await readDB();
-
-  // Procura se existe o usuário no banco de dados
-  const userValidate = userPerms.some(userDB => userDB === user);
-  return userValidate;
-};
-
-const isGroupValidate = (id) => {
-  // id é um objeto de _data ou message
-  if (!("participant" in id)) {
-    return '* Este comando funciona apenas em grupos'
+const typeChat = (idObj) => {
+  if ("participant" in idObj) {
+    return { message: 'group chat' }
   }
-  // retorna falso caso seja um grupo
-  return false;
-};
+  return { message: 'private chat' }
+}
 
-// talvez isso aqui não faça sentido
-const allValidates = async (remote, user) => {
-  const validGp = await groupValidate(remote);
-  const validUser = await userValidate(user);
+const validClimate = async (msg) => {
+  if (msg.split(' ').length === 1) {
+    return { message: 'Insira um local após o comando' }
+  }
 
-  if (!validUser) {
-    return '* Você não tem permissão para usar este comando'
+  const local = (msg.split(' ')[1]).replace('-', ' ');
+  const req = await models.climateAutoComplete(local);
+
+  if (req.length === 0) {
+    return { message: 'Nenhum resultado encontrado' }
+  }
+
+  if (req.length === 1) {
+    const reqCurrent = await models.climateCurrent(req[0].url);
+    return {
+      message: `
+      Tempo em ${reqCurrent.location.name}\n
+      Condição ${reqCurrent.current.condition.text}\n
+      Temperadura de ${reqCurrent.current.temp_c} ºC\n
+      Sensação de ${reqCurrent.current.feelslike_c} ºC\n
+      `, img: 'https:' + reqCurrent.current.condition.icon
+    }
+  }
+  fila.addQueue(req);
+  const response = req.map((local, index) =>
+    `${index}: ${local.name} - ${local.region} - ${local.country} \n`).join('');
+  return { message: `${response} \nDigite "&climate (numero do local)"` }
+}
+
+const validOptionClimate = async (msg) => {
+  const index = msg.split(' ')[1];
+  if (isNaN(index) || index > fila.peek().length) {
+    return { message: 'Insira um valor valido' }
+  }
+  const reqCurrent = await models.climateCurrent(fila.peek()[Number(index)].url);
+  fila.deleteFirts();
+  return {
+    message: `
+    Tempo em ${reqCurrent.location.name}\n
+    Condição ${reqCurrent.current.condition.text}\n
+    Temperadura de ${reqCurrent.current.temp_c} ºC\n
+    Sensação de ${reqCurrent.current.feelslike_c} ºC\n
+    `, img: 'https:' + reqCurrent.current.condition.icon
   };
-  if (!validGp) {
-    return '* Este grupo não tem permissão para usar este comando';
-  };
-  // retorna falso caso todas as validações passem
-  return false;
-};
-
+}
 
 module.exports = {
-  groupValidate,
-  userValidate,
-  allValidates,
-  isGroupValidate,
-  listenComand
+  listenComand,
+  typeChat,
+  validClimate,
+  validOptionClimate
 };

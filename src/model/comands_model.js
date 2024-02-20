@@ -1,65 +1,63 @@
-// deve ser passado a string contida na chave remode da mensaggem
-const { writeDB, readDB } = require('../utils/fsFunction');
-const { climates } = require('../services');
+require('dotenv').config();
+const db = require('../DB/FireBase');
 
-// ! alterar o retorno das validações para retornarem uma mensagem para o client
+const KEY = process.env.KEY;
+const bot = db.collection('bot');
 
-const addGroupPerms = async (remote) => {
-  const read = await readDB();
-  if (read.groupPerms.some(gp => gp === remote)) {
-    return console.log('grupo já adicionado')
+const setPerms = async (key, value) => {
+  // exemplo -> perms: {xPerm: []}
+  const resp = await bot.doc('perms').get();
+  const name = key.split('P')[0];
+  if (!resp.exists) {
+    // cria o objeto caso não exista nada em perms
+    const data = await bot.doc('perms').set({ [key]: [value] });
+    return { message: `${name} adicionado`, data }
+  };
+  if (!(key in resp.data())) {
+    // cria a chave caso não exista em perms
+    const data = await bot.doc('perms')
+      .update({ [key]: [value] });
+    return { message: `${name} adicionado`, data }
   }
-  await writeDB("groupPerms", [...read.groupPerms, remote])
+  if (resp.data()[key].includes(value)) {
+    // retorna erro caso o usuario ja tenha permissao
+    return { message: `Este ${name} já tem permissão`, data: {} };
+  };
+  const data = await bot.doc('perms')
+    .update({ [key]: [...resp.data()[key], value] });
+  return { message: `${name} adicionado`, data }
 };
 
-const addUserPerms = async (user) => {
-  // recebe o numero da pessoa 
-
-  const read = await readDB();
-  if (read.userPerms.some(userBD => userBD === user)) {
-    return console.log('usuário já adicionado')
+const deletePerms = async (key, value) => {
+  const resp = await bot.doc('perms').get();
+  if (!(key in resp.data())) {
+    return { message: 'Nenhuma permissão encontrada', data: {} }
   }
-  await writeDB("userPerms", [...read.userPerms, user])
+  if (!resp.data()[key].includes(value)) {
+    return { message: 'Permissão não encontrada', data: {} }
+  }
+  const data = await bot.doc('perms').update({
+    [key]: [...resp.data()[key]].filter(perm => perm !== value)
+  });
+  return { message: `Permisão retirada`, data }
+
 }
 
-const deleteGroupPerms = async (remote) => {
-  const read = await readDB();
-
-  if (!read.groupPerms.some(gp => gp === remote)) {
-    return console.log('grupo não encontrado');
-  }
-
-  const newArrGp = [...read.groupPerms].filter(gp => gp !== remote);
-  await writeDB("groupPerms", newArrGp)
-}
-
-const deleteUserPerms = async (user) => {
-  const read = await readDB();
-
-  if (!read.userPerms.some(userDB => userDB === user)) {
-    return console.log('user não encontrado');
-  }
-  const newArrGp = [...read.userPerms].filter(userDB => userDB !== user);
-  await writeDB("userPerms", newArrGp);
-}
-
-const climateAutoComplete = async (msg) => {
-  const local = msg.body.split(' ')[1];
-  const req = await climates.searchAutoComplete(local);
-  return req;
+const climateAutoComplete = async (local) => {
+  const response = await fetch(`https://api.weatherapi.com/v1/search.json?key=${KEY}&q=${local}`);
+  const data = await response.json();
+  return data;
 };
 
-const climateCurrent = async (msg) => {
-  const local = msg.body.split(' ')[1];
-  const req = await climates.current(local);
-  return req;
+const climateCurrent = async (local, days = 3) => {
+  const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${KEY}&q=${local}&days=${days}&aqi=no&alerts=no`);
+  const data = await response.json();
+  return data;
 }
 
 module.exports = {
-  addGroupPerms,
-  addUserPerms,
-  deleteGroupPerms,
-  deleteUserPerms,
   climateAutoComplete,
-  climateCurrent
+  climateCurrent,
+  deletePerms,
+  setPerms
 }
