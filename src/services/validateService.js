@@ -3,8 +3,12 @@ const fila = require('../utils/queue');
 
 const listenComand = (msg) => {
   // deve receber o conteudo da mensagem
-  const validComands = ['+user', '+gp', '!todes', '!everyone', '+var', '!climate', '&climate']
-  const isCommand = validComands.some(cmd => cmd === msg.split(' ')[0])
+  const validComands = ['+user', '+gp', '!var', '!todes', '!everyone', '+var', '!climate', '&climate']
+  if (typeof msg === 'object') {
+    return;
+  }
+  const input = msg.split(' ')[0];
+  const isCommand = validComands.some(cmd => cmd === input)
   // retorna true caso seja um comando e falso caso seja uma mensagem normal
   return isCommand;
 }
