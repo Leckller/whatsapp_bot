@@ -1,7 +1,5 @@
-const comandsModel = require('./comands_model');
-const climates = require('../model/climateEndPoints');
+const models = require('./comands_model');
 
 module.exports = {
-  comandsModel,
-  climates
+  models,
 }

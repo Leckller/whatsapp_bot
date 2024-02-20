@@ -1,16 +1,15 @@
-Bot para o Whatsapp
-  * tecnologias utilizadas
+---- Bot para o Whatsapp ----
+
+* tecnologias utilizadas
     - Node.js
     - Mocha, Chai, Sinon
     - Firebase (em construção :P)
-
-* On linux
-  - Antes de iniciar utilize o comando "npm run db"
 
 * Arquitetura utilizada
   - MSC ( Model, Services, Controlls)
 
 * Para que o app funcione é nessario criar um arquivo na raiz do projeto chamado serviceAccountKey.json
+
   - Dentro do console do firebase clique em cloud fire store
   - Crie a sua fire store utilizando o modo de testes provisoriamente
   - Vá até as configurações do projeto e clique em "Contas de serviço"
