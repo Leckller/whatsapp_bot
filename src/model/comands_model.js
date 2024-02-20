@@ -1,6 +1,7 @@
-const { searchAutoComplete, current } = require('./climateEndPoints');
+require('dotenv').config();
 const db = require('../DB/FireBase');
 
+const KEY = process.env.KEY;
 const bot = db.collection('bot');
 
 const setPerms = async (key, value) => {
@@ -43,13 +44,15 @@ const deletePerms = async (key, value) => {
 }
 
 const climateAutoComplete = async (local) => {
-  const req = await searchAutoComplete(local);
-  return req;
+  const response = await fetch(`https://api.weatherapi.com/v1/search.json?key=${KEY}&q=${local}`);
+  const data = await response.json();
+  return data;
 };
 
-const climateCurrent = async (local) => {
-  const req = await current(local);
-  return req;
+const climateCurrent = async (local, days = 3) => {
+  const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${KEY}&q=${local}&days=${days}&aqi=no&alerts=no`);
+  const data = await response.json();
+  return data;
 }
 
 module.exports = {

@@ -38,5 +38,6 @@ class queue {
     this.top += 1;
   }
 }
+const fila = new queue();
 
-module.exports = queue;
+module.exports = fila;
