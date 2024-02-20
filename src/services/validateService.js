@@ -2,8 +2,8 @@ const { readDB } = require("../utils/fsFunction");
 
 const listenComand = (msg) => {
   // deve receber o conteudo da mensagem
-  const validComands = ['+user', '+gp', '!everyone', '+var']
-  const isCommand = validComands.some(cmd => cmd === msg)
+  const validComands = ['+user', '+gp', '!everyone', '+var', '!climate', '&climate']
+  const isCommand = validComands.some(cmd => cmd === msg.split(' ')[0])
   // retorna true caso seja um comando e falso caso seja uma mensagem normal
   return isCommand;
 }

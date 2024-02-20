@@ -1,6 +1,6 @@
 // deve ser passado a string contida na chave remode da mensaggem
 const { writeDB, readDB } = require('../utils/fsFunction');
-const { climates } = require('../services');
+const { searchAutoComplete, current } = require('./climateEndPoints');
 
 // ! alterar o retorno das validações para retornarem uma mensagem para o client
 
@@ -43,15 +43,13 @@ const deleteUserPerms = async (user) => {
   await writeDB("userPerms", newArrGp);
 }
 
-const climateAutoComplete = async (msg) => {
-  const local = msg.body.split(' ')[1];
-  const req = await climates.searchAutoComplete(local);
+const climateAutoComplete = async (local) => {
+  const req = await searchAutoComplete(local);
   return req;
 };
 
-const climateCurrent = async (msg) => {
-  const local = msg.body.split(' ')[1];
-  const req = await climates.current(local);
+const climateCurrent = async (local) => {
+  const req = await current(local);
   return req;
 }
 

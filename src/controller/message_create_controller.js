@@ -2,6 +2,8 @@ const { comandsModel } = require('../model');
 const validates = require('../services');
 
 // Controles para o numero host do whatsapp
+const queue = [];
+
 const messageCreateController = async (msg) => {
 
   // verifica se foi disparado um comando ou não
@@ -10,15 +12,32 @@ const messageCreateController = async (msg) => {
   } else {
 
     const validGroup = validates.isGroupValidate(msg.id);
-    const contentMsg = msg.body;
+
+    if (msg.body.includes('&climate')) {
+      const index = msg.body.split(' ')[1];
+      if (isNaN(index) || index > queue.length) {
+        return await msg.reply('Insira um valor valido')
+      }
+      const reqCur = await comandsModel.climateCurrent(queue[0][Number(index)].url);
+      return await msg.reply(`${reqCur.current.temp_c} C`);
+    }
 
     if (msg.body.includes('!climate')) {
-      const req = await comandsModel.climateAutoComplete(msg);
+      if (msg.body.split(' ').length === 1) {
+        return await msg.reply('Insira um local após o comando')
+      }
+      const local = (msg.body.split(' ')[1]).replace('-', ' ');
+      const req = await comandsModel.climateAutoComplete(local);
+      if (req.length === 0) {
+        return await msg.reply('Nenhum resultado encontrado');
+      }
       if (req.length === 1) {
-        const reqCur = await comandsModel.climateCurrent(req[1].url);
+        const reqCur = await comandsModel.climateCurrent(req[0].url);
         return await msg.reply(`${reqCur.current.temp_c} C`)
       }
-      // return await msg.reply(`Escreva !`)
+      queue.push(req);
+      const response = req.map((local, index) => `${index}: ${local.name} - ${local.region} - ${local.country}`);
+      return await msg.reply(`${response} \n Digite "&climate (numeração do local)"`)
     }
 
     // se quotedParticipant existir significa que o comando foi chamado na resposta de outra mensagem, então este usuario da mensagem marcada recebe permissoes para utilizar o bot (quotedParticipant = numero da pessoa)
@@ -37,7 +56,7 @@ const messageCreateController = async (msg) => {
       return await msg.reply(validGroup);
     }
 
-    if (contentMsg === '!everyone') {
+    if (msg.body === '!everyone') {
       const chat = await msg.getChat();
 
       let text = '';

@@ -8,7 +8,7 @@ const searchAutoComplete = async (local) => {
   return data;
 };
 
-// searchAutoComplete('sao goncalo').then(t => console.log(t))
+// searchAutoComplete('sao-goncalo-rio-de-janeiro-brazil').then(t => console.log(t))
 
 const current = async (local, days = 3) => {
   const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${KEY}&q=${local}&days=${days}&aqi=no&alerts=no`);

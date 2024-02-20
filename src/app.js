@@ -1,6 +1,9 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const { messageController, messageCreateController } = require('./controller');
+const queue = require('./utils/queue');
+
+const appQueue = new queue();
 
 const client = new Client({
   authStrategy: new LocalAuth()
@@ -19,3 +22,5 @@ client.on('message', messageController);
 client.on('message_create', messageCreateController);
 
 client.initialize();
+
+module.exports = appQueue;

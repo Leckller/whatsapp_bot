@@ -38,3 +38,5 @@ class queue {
     this.top += 1;
   }
 }
+
+module.exports = queue;

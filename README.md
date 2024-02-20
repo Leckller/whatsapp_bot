@@ -2,14 +2,20 @@ Bot para o Whatsapp
   * tecnologias utilizadas
     - Node.js
     - Mocha, Chai, Sinon
-    - Docker (ainda não implementado)
-    - MySql (ainda não implementado)
+    - Firebase (em construção :P)
 
 * On linux
   - Antes de iniciar utilize o comando "npm run db"
 
 * Arquitetura utilizada
   - MSC ( Model, Services, Controlls)
+
+* Para que o app funcione é nessario criar um arquivo na raiz do projeto chamado serviceAccountKey.json
+  - Dentro do console do firebase clique em cloud fire store
+  - Crie a sua fire store utilizando o modo de testes provisoriamente
+  - Vá até as configurações do projeto e clique em "Contas de serviço"
+  - Clique em "gerar nova chave privada", após isso vai ser baixado um arquivo json
+  - Por fim, coloque o arquivo na raiz do projeto e altere o nome dele para "serviceAccountKey.json"
 
 * Comandos 
   - "+gp": (identificador do gp)'adiciona permissao para falar em um grupo'

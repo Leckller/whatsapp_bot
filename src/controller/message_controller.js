@@ -3,10 +3,11 @@ const validates = require('../services');
 const { commands } = require('./index')
 
 // Controles para as pessoas não host do whatsapp
+
 const messageController = async (msg) => {
 
   // verifica se foi disparado um comando ou não
-  if (!validates.listenComand(msg.body)) {
+  if (!validates.listenComand(msg.body) && validates.userValidate(msg._data.quotedParticipant)) {
     return;
   } else {
 
