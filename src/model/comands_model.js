@@ -5,40 +5,60 @@ const KEY = process.env.KEY;
 const bot = db.collection('bot');
 
 const readBot = async (document) => {
-  const resp = await bot.doc(document).get();
-  return resp.data();
-}
-readBot('variables')
-
-const addVar = async (varName, value) => {
-  if (!resp.exists) {
-    const data = await bot.doc('variables').set({})
-  }
+  const require = await bot.doc(document).get();
+  return require;
 }
 
-const setPerms = async (key, value) => {
+const set = async (document, key, value) => {
   // exemplo -> perms: {xPerm: []}
-  const resp = await bot.doc('perms').get();
+  const getDB = await readBot(document);
   const name = key.split('P')[0];
-  if (!resp.exists) {
-    // cria o objeto caso não exista nada em perms
-    const data = await bot.doc('perms').set({ [key]: [value] });
-    return { message: `${name} adicionado`, data }
+
+  if (!getDB.exists) {
+    // cria o objeto caso não exista nada em [document]
+    const data = await bot.doc(document).set({ [key]: [value] });
+    return { message: `${name} adicionado | doc`, data }
   };
-  if (!(key in resp.data())) {
-    // cria a chave caso não exista em perms
-    const data = await bot.doc('perms')
+  if (!(key in getDB.data())) {
+    // cria a chave caso não exista em [document]
+    const data = await bot.doc(document)
       .update({ [key]: [value] });
-    return { message: `${name} adicionado`, data }
+    return { message: `${name} adicionado | key`, data }
   }
-  if (resp.data()[key].includes(value)) {
+  if (getDB.data()[key].includes(value)) {
     // retorna erro caso o usuario ja tenha permissao
     return { message: `Este ${name} já tem permissão`, data: {} };
   };
-  const data = await bot.doc('perms')
-    .update({ [key]: [...resp.data()[key], value] });
+
+  const data = await bot.doc(document)
+    .update({ [key]: [...getDB.data()[key], value] });
   return { message: `${name} adicionado`, data }
-};
+}
+// code smell abaixo
+
+// const setPerms = async (key, value) => {
+//   // exemplo -> perms: {xPerm: []}
+//   const resp = await bot.doc('perms').get();
+//   const name = key.split('P')[0];
+//   if (!resp.exists) {
+//     // cria o objeto caso não exista nada em perms
+//     const data = await bot.doc('perms').set({ [key]: [value] });
+//     return { message: `${name} adicionado`, data }
+//   };
+//   if (!(key in resp.data())) {
+//     // cria a chave caso não exista em perms
+//     const data = await bot.doc('perms')
+//       .update({ [key]: [value] });
+//     return { message: `${name} adicionado`, data }
+//   }
+//   if (resp.data()[key].includes(value)) {
+//     // retorna erro caso o usuario ja tenha permissao
+//     return { message: `Este ${name} já tem permissão`, data: {} };
+//   };
+//   const data = await bot.doc('perms')
+//     .update({ [key]: [...resp.data()[key], value] });
+//   return { message: `${name} adicionado`, data }
+// };
 
 const deletePerms = async (key, value) => {
   const resp = await bot.doc('perms').get();
@@ -71,5 +91,5 @@ module.exports = {
   climateAutoComplete,
   climateCurrent,
   deletePerms,
-  setPerms
+  set
 }
