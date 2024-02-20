@@ -2,7 +2,7 @@ const { comandsModel } = require('../model');
 const validates = require('../services');
 
 // Controles para o numero host do whatsapp
-const queue = [];
+let queue = [];
 
 const messageCreateController = async (msg) => {
 
@@ -19,6 +19,7 @@ const messageCreateController = async (msg) => {
         return await msg.reply('Insira um valor valido')
       }
       const reqCur = await comandsModel.climateCurrent(queue[0][Number(index)].url);
+      queue = [];
       return await msg.reply(`${reqCur.current.temp_c} C`);
     }
 
