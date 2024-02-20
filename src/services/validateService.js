@@ -53,7 +53,6 @@ const validOptionClimate = async (msg) => {
     return { message: 'Insira um valor valido' }
   }
   const reqCurrent = await models.climateCurrent(fila.peek()[Number(index)].url);
-  console.log(reqCurrent)
   fila.deleteFirts();
   return {
     message: `
