@@ -4,7 +4,8 @@ const { models } = require('../model');
 
 const messageCreateController = async (msg) => {
 
-  if (!services.listenComand(msg.body) && !msg.fromMe) return;
+  if (!msg.fromMe) return;
+  if (!services.listenComand(msg.body)) return;
 
   if (msg.body.includes('!climate')) {
     const { message } = await services.validClimate(msg.body)

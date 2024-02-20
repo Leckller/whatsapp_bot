@@ -4,6 +4,18 @@ const db = require('../DB/FireBase');
 const KEY = process.env.KEY;
 const bot = db.collection('bot');
 
+const readBot = async (document) => {
+  const resp = await bot.doc(document).get();
+  return resp.data();
+}
+readBot('variables')
+
+const addVar = async (varName, value) => {
+  if (!resp.exists) {
+    const data = await bot.doc('variables').set({})
+  }
+}
+
 const setPerms = async (key, value) => {
   // exemplo -> perms: {xPerm: []}
   const resp = await bot.doc('perms').get();
