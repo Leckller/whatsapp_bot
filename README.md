@@ -21,3 +21,5 @@
   - "+user: (identificador do usuario) 'adiciona permissao para um usuario usar o bot'
   - "+var": 'adiciona uma variavel'
   - "!everyone": 'menciona todos os participantes do grupo'
+  - "!climate": (local) 'comando para requisição em uma api do tempo'
+  - "&climate": (valor) 'comando para escolher uma opção da api do tempo'
