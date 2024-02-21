@@ -1,11 +1,16 @@
+const { models } = require('../model');
 const { services } = require('../services');
 
 // Controles para as pessoas não host do whatsapp
 
 const messageController = async (msg) => {
 
-  // verifica se foi disparado um comando ou não
   if (!services.listenComand(msg.body)) return;
+
+  if (msg.body.includes('!var')) {
+    const { message } = await services.validCallVar(msg.body);
+    return await msg.reply(message);
+  }
 
   if (msg.body.includes('!climate')) {
     const { message } = await services.validClimate(msg.body)
@@ -14,8 +19,7 @@ const messageController = async (msg) => {
 
   if (msg.body.includes('&climate') && !(msg.body.includes('"&climate'))) {
     const { message } = await services.validOptionClimate(msg.body);
-    await msg.reply(message);
-    return;
+    return await msg.reply(message);
   }
 
   const GROUP = services.typeChat(msg.id).message === 'group chat';

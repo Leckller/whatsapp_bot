@@ -9,29 +9,30 @@ const readBot = async (document) => {
   return require;
 }
 
-const set = async (document, key, value) => {
+const set = async (document, key, value, array = true) => {
   // exemplo -> perms: {xPerm: []}
   const getDB = await readBot(document);
   const name = key.split('P')[0];
 
   if (!getDB.exists) {
     // cria o objeto caso não exista nada em [document]
-    const data = await bot.doc(document).set({ [key]: [value] });
+    const data = await bot.doc(document)
+      .set({ [key]: array ? [value] : value });
     return { message: `${name} adicionado | doc`, data }
   };
   if (!(key in getDB.data())) {
     // cria a chave caso não exista em [document]
     const data = await bot.doc(document)
-      .update({ [key]: [value] });
+      .update({ [key]: array ? [value] : value });
     return { message: `${name} adicionado | key`, data }
   }
-  if (getDB.data()[key].includes(value)) {
+  if (array && getDB.data()[key].includes(value)) {
     // retorna erro caso o usuario ja tenha permissao
     return { message: `Este ${name} já tem permissão`, data: {} };
   };
 
   const data = await bot.doc(document)
-    .update({ [key]: [...getDB.data()[key], value] });
+    .update({ [key]: array ? [...getDB.data()[key], value] : value });
   return { message: `${name} adicionado`, data }
 }
 

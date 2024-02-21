@@ -27,7 +27,7 @@ const validClimate = async (msg) => {
     return { message: 'Insira um local após o comando' }
   }
 
-  const local = (msg.split(' ')[1]).replace('-', ' ');
+  const local = msg.slice(msg.split(' ')[0].length + 1);
   const req = await models.climateAutoComplete(local);
 
   if (req.length === 0) {
@@ -40,18 +40,25 @@ const validClimate = async (msg) => {
       message: `
       Tempo em ${reqCurrent.location.name}\n
       Condição ${reqCurrent.current.condition.text}\n
-      Temperadura de ${reqCurrent.current.temp_c} ºC\n
+      Temperatura de ${reqCurrent.current.temp_c} ºC\n
       Sensação de ${reqCurrent.current.feelslike_c} ºC\n
       `, img: 'https:' + reqCurrent.current.condition.icon
     }
   }
   fila.addQueue(req);
+  setTimeout(() => {
+    fila.deleteFirts();
+  }, 30000);
   const response = req.map((local, index) =>
     `${index}: ${local.name} - ${local.region} - ${local.country} \n`).join('');
-  return { message: `${response} \nDigite "&climate (numero do local)"` }
+  return { message: `${response} \nDigite "&climate (numero do local)"\nAs opções expiram em 30s` }
 }
 
 const validOptionClimate = async (msg) => {
+  if (fila.isEmpty()) {
+    return { message: "Nenhuma opção disponível" };
+  }
+
   const index = msg.split(' ')[1];
   if (isNaN(index) || index > fila.peek().length) {
     return { message: 'Insira um valor valido' }
@@ -62,15 +69,44 @@ const validOptionClimate = async (msg) => {
     message: `
     Tempo em ${reqCurrent.location.name}\n
     Condição ${reqCurrent.current.condition.text}\n
-    Temperadura de ${reqCurrent.current.temp_c} ºC\n
+    Temperatura de ${reqCurrent.current.temp_c} ºC\n
     Sensação de ${reqCurrent.current.feelslike_c} ºC\n
     `, img: 'https:' + reqCurrent.current.condition.icon
   };
+}
+
+const validCallVar = async (msg) => {
+  const get = await models.readBot('variables');
+  const varName = msg.split(' ')[1];
+  if (!varName) {
+    return { message: 'insira um nome' };
+  }
+  return { message: `${JSON.parse(get.data()[varName])}` };
+}
+
+const validAddVar = async (msg) => {
+  const params = msg.split(' ');
+  const varName = params[1];
+  const size = params[0].length + params[1].length + 2;
+  const varValue = JSON.stringify(msg.slice(size));
+
+  if (!varName) {
+    return { message: '* Insira um nome para a variavel' };
+  }
+  if (!varValue) {
+    return { message: '* Insira um valor para a variavel' };
+  }
+  const { message } = await models
+    .set('variables', varName, varValue, false);
+  return { message };
+
 }
 
 module.exports = {
   listenComand,
   typeChat,
   validClimate,
-  validOptionClimate
+  validOptionClimate,
+  validAddVar,
+  validCallVar
 };
