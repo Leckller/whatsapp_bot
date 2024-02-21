@@ -1,5 +1,5 @@
 const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, Buttons } = require('whatsapp-web.js');
 const { messageController, messageCreateController } = require('./controller');
 
 const client = new Client({
@@ -11,7 +11,7 @@ client.on('qr', (qr) => {
 });
 
 client.on('ready', () => {
-  console.log('Client is ready!');
+  console.log('Cliente está pronto!');
 });
 
 client.on('message', messageController);

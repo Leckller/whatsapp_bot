@@ -6,7 +6,7 @@ class queue {
   }
 
   isEmpty() {
-    return this.count === 0 ? true : false;
+    return this.count === this.top ? true : false;
   }
 
   peek() {

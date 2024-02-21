@@ -1,33 +1,43 @@
 require('dotenv').config();
-const db = require('../DB/FireBase');
+const { db } = require('../DB/FireBase');
 
 const KEY = process.env.KEY;
 const bot = db.collection('bot');
 
-const setPerms = async (key, value) => {
+const readBot = async (document) => {
+  const require = await bot.doc(document).get();
+  return require;
+}
+
+const set = async (document, key, value, array = true) => {
   // exemplo -> perms: {xPerm: []}
-  const resp = await bot.doc('perms').get();
+  const getDB = await readBot(document);
   const name = key.split('P')[0];
-  if (!resp.exists) {
-    // cria o objeto caso não exista nada em perms
-    const data = await bot.doc('perms').set({ [key]: [value] });
-    return { message: `${name} adicionado`, data }
+
+  if (!getDB.exists) {
+    // cria o objeto caso não exista nada em [document]
+    const data = await bot.doc(document)
+      .set({ [key]: array ? [value] : value });
+    return { message: `${name} adicionado | doc`, data }
   };
-  if (!(key in resp.data())) {
-    // cria a chave caso não exista em perms
-    const data = await bot.doc('perms')
-      .update({ [key]: [value] });
-    return { message: `${name} adicionado`, data }
+  if (!(key in getDB.data())) {
+    // cria a chave caso não exista em [document]
+    const data = await bot.doc(document)
+      .update({ [key]: array ? [value] : value });
+    return { message: `${name} adicionado | key`, data }
   }
-  if (resp.data()[key].includes(value)) {
+  if (array && getDB.data()[key].includes(value)) {
     // retorna erro caso o usuario ja tenha permissao
     return { message: `Este ${name} já tem permissão`, data: {} };
   };
-  const data = await bot.doc('perms')
-    .update({ [key]: [...resp.data()[key], value] });
-  return { message: `${name} adicionado`, data }
-};
 
+  const data = await bot.doc(document)
+    .update({ [key]: array ? [...getDB.data()[key], value] : value });
+  return { message: `${name} adicionado`, data }
+}
+
+
+//code smell
 const deletePerms = async (key, value) => {
   const resp = await bot.doc('perms').get();
   if (!(key in resp.data())) {
@@ -59,5 +69,6 @@ module.exports = {
   climateAutoComplete,
   climateCurrent,
   deletePerms,
-  setPerms
+  set,
+  readBot
 }
