@@ -1,5 +1,6 @@
 const { models } = require('../model');
 const fila = require('../utils/queue');
+const climateUtil = require('../utils/climateUtil');
 
 const listenComand = (msg) => {
   // deve receber o conteudo da mensagem
@@ -35,20 +36,19 @@ const validClimate = async (msg) => {
   }
 
   if (req.length === 1) {
-    const reqCurrent = await models.climateCurrent(req[0].url);
-    return {
-      message: `
-      Tempo em ${reqCurrent.location.name}\n
-      Condição ${reqCurrent.current.condition.text}\n
-      Temperatura de ${reqCurrent.current.temp_c} ºC\n
-      Sensação de ${reqCurrent.current.feelslike_c} ºC\n
-      `, img: 'https:' + reqCurrent.current.condition.icon
-    }
+    return await climateUtil(req[0].url);
   }
+
+  const secondCmd = local.slice(local.length - 1);
+  if (secondCmd && req.length > 1 && !isNaN(secondCmd)) {
+    return await climateUtil(req[0].url);
+  }
+
   fila.addQueue(req);
   setTimeout(() => {
     fila.deleteFirts();
   }, 30000);
+
   const response = req.map((local, index) =>
     `${index}: ${local.name} - ${local.region} - ${local.country} \n`).join('');
   return { message: `${response} \nDigite "&climate (numero do local)"\nAs opções expiram em 30s` }
@@ -81,6 +81,9 @@ const validCallVar = async (msg) => {
   if (!varName) {
     return { message: 'insira um nome' };
   }
+  if (!(varName in get.data())) {
+    return { message: `A variavel ${varName} não existe` }
+  }
   return { message: `${JSON.parse(get.data()[varName])}` };
 }
 
@@ -99,7 +102,12 @@ const validAddVar = async (msg) => {
   const { message } = await models
     .set('variables', varName, varValue, false);
   return { message };
+}
 
+const validPerm = async (permType, perm) => {
+  const read = await models.readBot('perms');
+  const verify = read.data()[permType].includes(perm);
+  return verify;
 }
 
 module.exports = {
@@ -108,5 +116,6 @@ module.exports = {
   validClimate,
   validOptionClimate,
   validAddVar,
-  validCallVar
+  validCallVar,
+  validPerm
 };

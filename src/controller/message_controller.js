@@ -1,14 +1,18 @@
-const { models } = require('../model');
 const { services } = require('../services');
 
 // Controles para as pessoas não host do whatsapp
 
 const messageController = async (msg) => {
-
   if (!services.listenComand(msg.body)) return;
-
+  console.log(msg.body);
   if (msg.body.includes('!var')) {
     const { message } = await services.validCallVar(msg.body);
+    return await msg.reply(message);
+  }
+
+  if (msg.body.includes('+var') && await services.validPerm('userPerms', msg.author)) {
+    console.log('ok')
+    const { message } = await services.validAddVar(msg.body);
     return await msg.reply(message);
   }
 

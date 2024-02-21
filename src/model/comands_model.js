@@ -1,5 +1,5 @@
 require('dotenv').config();
-const db = require('../DB/FireBase');
+const { db } = require('../DB/FireBase');
 
 const KEY = process.env.KEY;
 const bot = db.collection('bot');
