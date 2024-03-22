@@ -1,8 +1,13 @@
 const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth, Buttons } = require('whatsapp-web.js');
-const { messageController, messageCreateController } = require('./controller');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
-const client = new Client({
+class CallBot extends Client {
+  ping(chatId) {
+    super.sendMessage(chatId, 'pong');
+  }
+}
+
+const client = new CallBot({
   authStrategy: new LocalAuth()
 });
 
@@ -14,11 +19,15 @@ client.on('ready', () => {
   console.log('Cliente está pronto!');
 });
 
-client.on('message', messageController);
 
-// caso queira enviar fotos deverá ser implementado
-// aqui, caso contrario o node não vai permitir usar o client
+client.on('message', (msg) => {
+  if (msg.body === 'ping') {
+    client.ping(msg.from);
+  }
+});
 
-client.on('message_create', messageCreateController);
+client.on('message_create', () => {
+
+});
 
 client.initialize();
